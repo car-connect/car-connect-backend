@@ -18,7 +18,7 @@ router.post('/',async(req,res)=>{
     Data.save((err)=>{
         if(err) throw err
         else{
-            res.send('user added')
+            res.json("Data Added")
         }
     })
 })
