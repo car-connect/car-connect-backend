@@ -1,15 +1,17 @@
 const express=require('express')
 const router=express.Router()
 const bcrypt=require('bcrypt')
+const session=require('express-session');
+const passportLocalMongoose=require('passport-local-mongoose')
 const {UserModel}=require('./../../config/connection')
 const passport=require('passport')
 
 router.get('/',(req,res)=>{
     res.send("qwerty")
 })
-router.post('/signup',async(req,res)=>{
+router.post('/signup',(req,res)=>{
    
-    UserModel.register({email:req.body.email,username:req.body.username},req.body.password,(err,user)=>{
+    UserModel.register({username:req.body.username},req.body.password,(err,user)=>{
         if(err) {
             console.log(err);
             res.json(err.message)
@@ -17,28 +19,38 @@ router.post('/signup',async(req,res)=>{
         else{
             console.log(user);
             passport.authenticate("local")(req,res,()=> {
-                res.json("User Inserted")
+                res.json('add')
             })
         }
 
     })
 })
 router.post('/login',(req,res)=>{
-    const user=new UserData({
+    const user=new UserModel({
         username:req.body.username,
         password:req.body.password
     })
+   
     req.login(user,(err)=>{
         if(err){
             console.log(err);
+            res.json('not')
         }
         else{
             passport.authenticate("local")(req,res,()=>{
-                res.json("authenticated")
+                res.json(user)
+                // res.redirect('/user/home')
             })
         }
     })
  
+})
+router.get('/home',(req,res)=>{
+    if(req.isAuthenticated()){
+        res.json('authenticated')
+    }else{
+        res.json('not auth')
+    }
 })
 
 module.exports=router

@@ -1,29 +1,29 @@
-require('dotenv').config()
-const express=require('express')
-const app = new express()
-const cors=require('cors')
-const UserRouter=require('./src/routes/UserRoutes')
-const session=require('express-session')
-const passport=require('passport')
+require('dotenv').config();
+const express=require('express');
+const app = new express();
+const cors=require('cors');
+const UserRouter=require('./src/routes/UserRoutes');
+const session=require('express-session');
+const passport=require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const {UserModel}=require('./config/connection')
-const port=process.env.PORT || 8000
+const {UserModel}=require('./config/connection');
+const port=process.env.PORT || 8000 ;
 
  //middlewares
 app.use(cors({
     origin:'http://localhost:4200',
     credentials:true
-}))
-app.use(express.urlencoded({extended:true}))
-app.use(express.json())
+}));
+app.use(express.urlencoded({extended:true}));
+app.use(express.json());
 
 app.use(session({
     secret:process.env.SESSION_SECRET,
     resave:false,
     saveUninitialized:false
-}))
-app.use(passport.initialize())
-app.use(passport.session())
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_KEY,
@@ -37,6 +37,8 @@ passport.use(new GoogleStrategy({
   }
 ));
  //routes
+app.use('/user',UserRouter);
+
 app.get('/auth/google',
   passport.authenticate('google', { scope: ["profile"] }));
 
@@ -46,9 +48,8 @@ app.get('/auth/google/secrets',
     // Successful authentication, redirect home.
     res.json("authenticated")
   });
-app.use('/user',UserRouter)
 
  //PORT
 app.listen(port,()=>{
     console.log(`server connected at http://localhost:${port}`);
-})
+});
