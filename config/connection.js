@@ -25,7 +25,10 @@ const UserSchema=new mongoose.Schema({
 UserSchema.plugin(passportLocalMongoose);
 UserSchema.plugin(findOrCreate);
 
-
+const AdminSchema=new mongoose.Schema({
+  username:String,
+  password:String
+})
 
 //models
 
@@ -33,19 +36,20 @@ const UserModel=mongoose.model('Users',UserSchema)
 
 passport.use(UserModel.createStrategy());
 
-// passport.serializeUser(function(user, cb) {
-//     process.nextTick(function() {
-//       cb(null, { id: user.id, username: user.username, name: user.name });
-//     });
-//   });
+passport.serializeUser(function(user, cb) {
+    process.nextTick(function() {
+      cb(null, { id: user.id, username: user.username, name: user.name });
+    });
+  });
   
-//   passport.deserializeUser(function(user, cb) {
-//     process.nextTick(function() {
-//       return cb(null, user);
-//     });
-//   });
+  passport.deserializeUser(function(user, cb) {
+    process.nextTick(function() {
+      return cb(null, user);
+    });
+  });
 
-passport.serializeUser(UserModel.serializeUser());
-passport.deserializeUser(UserModel.deserializeUser());
+// passport.serializeUser(UserModel.serializeUser());
+// passport.deserializeUser(UserModel.deserializeUser());
 
-module.exports={UserModel}
+const AdminModel=mongoose.model('Admins',AdminSchema)
+module.exports={UserModel,AdminModel}

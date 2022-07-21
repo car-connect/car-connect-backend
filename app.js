@@ -3,6 +3,7 @@ const express=require('express');
 const app = new express();
 const cors=require('cors');
 const UserRouter=require('./src/routes/UserRoutes');
+const AdminRouter=require('./src/routes/AdminRoutes')
 const session=require('express-session');
 const passport=require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
@@ -11,7 +12,7 @@ const port=process.env.PORT || 8000 ;
 
  //middlewares
 app.use(cors({
-    origin:'http://localhost:4200',
+    origin:'*',
     credentials:true
 }));
 app.use(express.urlencoded({extended:true}));
@@ -26,11 +27,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
-    clientSecret: process.env.CLIENT_KEY,
+    clientSecret: process.env.CLIENT_SECRET,
     callbackURL: "http://localhost:8000/auth/google/secrets",
     userProfileURL:"https://www.googleapis.com/oauth2/v3/userinfo"
   },
   function(accessToken, refreshToken, profile, cb) {
+    console.log(profile);
     UserModel.findOrCreate({ googleId: profile.id }, function (err, user) {
       return cb(err, user);
     });
@@ -38,9 +40,10 @@ passport.use(new GoogleStrategy({
 ));
  //routes
 app.use('/user',UserRouter);
+app.use('/admin',AdminRouter)
 
 app.get('/auth/google',
-  passport.authenticate('google', { scope: ["profile"] }));
+  passport.authenticate('google', { scope: ["profile","email","openid"] }));
 
 app.get('/auth/google/secrets', 
   passport.authenticate('google', { failureRedirect: '/login' }),
