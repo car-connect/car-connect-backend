@@ -4,6 +4,7 @@ const session=require('express-session');
 const passportLocalMongoose=require('passport-local-mongoose')
 const passport=require('passport')
 const findOrCreate = require('mongoose-findorcreate')
+const emailValidator=require('email-validator')
 const url=process.env.MONGODB_URL
 //database connection
 mongoose.connect(url,{
@@ -18,16 +19,43 @@ mongoose.connect(url,{
 //schema 
 
 const UserSchema=new mongoose.Schema({
-    username:String,
-    password:String,
-    googleId:String
-});
+    username:{
+      type:String,
+      trim:true,
+      validate:{
+        validator:emailValidator.validate,
+        message:props=>`${props.value} is not a valid e-mail`
+      }
+    },
+    password:{
+      type:String,
+      trim:true,
+      minlength:8
+    },
+    googleId:String,
+    
+    
+ },
+  
+  {
+  
+    timestamps:true
+   
+  }
+
+);
 UserSchema.plugin(passportLocalMongoose);
 UserSchema.plugin(findOrCreate);
 
 const AdminSchema=new mongoose.Schema({
-  username:String,
-  password:String
+  username:{
+    type:String,
+    trim:true
+  },
+  password:{
+    type:String,
+    trim:true
+  }
 })
 
 //models

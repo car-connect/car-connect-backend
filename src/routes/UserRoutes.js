@@ -4,8 +4,12 @@ const router=express.Router()
 const bcrypt=require('bcrypt')
 const session=require('express-session');
 const passportLocalMongoose=require('passport-local-mongoose')
+const jwt=require('jsonwebtoken')
 const {UserModel}=require('./../../config/connection')
 const passport=require('passport')
+
+
+
 
 let verifyToken=(req,res,next)=>{
     if(!req.headers.authorization){
@@ -52,7 +56,9 @@ router.post('/login',(req,res)=>{
         }
         else{
             passport.authenticate("local")(req,res,()=>{
-                res.json({user:user,message:'authenticated'})
+                console.log("done",user);
+              let token= jwt.sign(user.username+user.password,process.env.JWT_SECRET)
+                res.json({user:req.user,message:'authenticated',token:token})
                 // res.redirect('/user/home')
             })
         }

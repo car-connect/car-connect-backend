@@ -17,7 +17,6 @@ router.post('/login',async(req,res)=>{
                 if(err) throw err
                 else{
                     if(admin==true){
-                        console.log(req.body.username);
                         let payload={subject:req.body.email+req.body.password}
                       let token=  jwt.sign(payload,jwt_secret)
                         res.json({auth:admin,token:token})

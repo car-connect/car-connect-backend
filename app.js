@@ -7,19 +7,20 @@ const AdminRouter=require('./src/routes/AdminRoutes')
 const session=require('express-session');
 const passport=require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const cookieParser=require('cookie-parser')
+const jwt=require('jsonwebtoken')
 const {UserModel}=require('./config/connection');
 const port=process.env.PORT || 8000 ;
 
  //middlewares
 app.use(cors({
     origin:'*',
-    credentials:true
 }));
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
-
+app.use(cookieParser())
 app.use(session({
-    secret:process.env.SESSION_SECRET,
+    secret:process.env.SESSION_SECRET || 'anything',
     resave:false,
     saveUninitialized:false
 }));
@@ -32,8 +33,7 @@ passport.use(new GoogleStrategy({
     userProfileURL:"https://www.googleapis.com/oauth2/v3/userinfo"
   },
   function(accessToken, refreshToken, profile, cb) {
-    console.log(profile);
-    UserModel.findOrCreate({ googleId: profile.id }, function (err, user) {
+    UserModel.findOrCreate({ googleId: profile.id ,username: profile.emails[0].value }, function (err, user) {
       return cb(err, user);
     });
   }
@@ -49,7 +49,13 @@ app.get('/auth/google/secrets',
   passport.authenticate('google', { failureRedirect: '/login' }),
   function(req, res) {
     // Successful authentication, redirect home.
-    res.json("authenticated")
+    //res.json("authenticated")
+    let responseHTML = '<html><head><title>Main</title></head><body></body><script>res = %value%; window.opener.postMessage(res, "*");window.close();</script></html>'
+    responseHTML = responseHTML.replace('%value%', JSON.stringify({
+       token:jwt.sign(req.user.username+req.user.password,process.env.JWT_SECRET),
+        user: req.user
+    }));
+    res.status(200).send(responseHTML);
   });
 
  //PORT
