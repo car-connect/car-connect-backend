@@ -32,6 +32,10 @@ const UserSchema=new mongoose.Schema({
       trim:true,
       minlength:8
     },
+    name:{
+      type:String,
+      trim:true,
+    },
     googleId:String,
     
     
