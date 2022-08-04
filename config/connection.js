@@ -62,6 +62,18 @@ const AdminSchema=new mongoose.Schema({
   }
 })
 
+const ProductSchema=new mongoose.Schema({
+  product_id:String,
+  product_name:String,
+  product_price:String,
+  product_description:String,
+  product_category:String,
+  available_quantity:String,
+  percentage_discount:String,
+  online_date:String,
+
+})
+
 //models
 
 const UserModel=mongoose.model('Users',UserSchema)
@@ -84,4 +96,6 @@ passport.serializeUser(function(user, cb) {
 // passport.deserializeUser(UserModel.deserializeUser());
 
 const AdminModel=mongoose.model('Admins',AdminSchema)
-module.exports={UserModel,AdminModel}
+
+const ProductModel=mongoose.model('Products',ProductSchema)
+module.exports={UserModel,AdminModel,ProductModel}
