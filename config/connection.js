@@ -73,6 +73,11 @@ const ProductSchema=new mongoose.Schema({
   online_date:String,
 
 })
+const Cartschema=new mongoose.Schema({
+  user:String,
+  products:Array,
+
+})
 
 //models
 
@@ -98,4 +103,6 @@ passport.serializeUser(function(user, cb) {
 const AdminModel=mongoose.model('Admins',AdminSchema)
 
 const ProductModel=mongoose.model('Products',ProductSchema)
-module.exports={UserModel,AdminModel,ProductModel}
+
+const CartModel=mongoose.model('Cart',Cartschema)
+module.exports={UserModel,AdminModel,ProductModel,CartModel}

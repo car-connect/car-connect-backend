@@ -3,7 +3,7 @@ const express=require('express')
 const router=express.Router()
 const bcrypt=require('bcrypt')
 const jwt=require('jsonwebtoken')
-const {AdminModel,ProductModel}=require('./../../config/connection')
+const {AdminModel,ProductModel, UserModel}=require('./../../config/connection')
 let jwt_secret=process.env.JWT_SECRET
 
 
@@ -63,9 +63,20 @@ router.get('/getproduct',async(req,res)=>{
         res.json(data)
     })
 })
+router.get('/getproduct/:category',async(req,res)=>{
+    let category=req.params.category
+    ProductModel.find({product_category:category}).then((data)=>{
+        res.json(data)
+    })
+})
 router.get('/deleteproduct/:id',async(req,res)=>{
     let id=req.params.id
     ProductModel.findByIdAndDelete(id).then((data)=>{
+        res.json(data)
+    })
+})
+router.get('/getuser',async(req,res)=>{
+    UserModel.find().then((data)=>{
         res.json(data)
     })
 })
