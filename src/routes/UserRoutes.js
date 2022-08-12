@@ -38,14 +38,14 @@ router.post('/signup',(req,res)=>{
         else{
             console.log(user);
             passport.authenticate("local")(req,res,()=> {
-                let token=jwt.sign(user.username,"qwerty")
+                let token=Math.floor(1000 + Math.random() * 9000);
                 let output=
                 `<h2>CAR-CONNECT</h2>
                 <p>Welcome to CAR_CONNECT</p>
                 <h5>
                 Dear ${req.body.username}:
                 
-                Please paste the following key to verify the email address on your account</h5>
+                Your verification Code to verify the email address on your account</h5>
                 <a>${token}</a>
                 <h3>Message</h3>
                 `;
@@ -126,5 +126,6 @@ router.post('/authpass',(req,res)=>{
         }
     })
 })
+
 
 module.exports=router

@@ -80,6 +80,10 @@ router.get('/getuser',async(req,res)=>{
         res.json(data)
     })
 })
+router.post('/addtocart',async(req,res)=>{
+    console.log("ok");
+    res.json({message:"done"})
+})
 
 
 module.exports=router
