@@ -58,17 +58,8 @@ router.post('/addproduct',async(req,res)=>{
     })
     
 })
-router.get('/getproduct',async(req,res)=>{
-    ProductModel.find().then((data)=>{
-        res.json(data)
-    })
-})
-router.get('/getproduct/:category',async(req,res)=>{
-    let category=req.params.category
-    ProductModel.find({product_category:category}).then((data)=>{
-        res.json(data)
-    })
-})
+
+
 router.get('/deleteproduct/:id',async(req,res)=>{
     let id=req.params.id
     ProductModel.findByIdAndDelete(id).then((data)=>{
@@ -80,10 +71,7 @@ router.get('/getuser',async(req,res)=>{
         res.json(data)
     })
 })
-router.post('/addtocart',async(req,res)=>{
-    console.log("ok");
-    res.json({message:"done"})
-})
+
 
 
 module.exports=router

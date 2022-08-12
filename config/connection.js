@@ -76,6 +76,7 @@ const ProductSchema=new mongoose.Schema({
 const Cartschema=new mongoose.Schema({
   user:String,
   products:Array,
+  Qty:Number
 
 })
 

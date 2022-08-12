@@ -5,7 +5,7 @@ const bcrypt=require('bcrypt')
 const session=require('express-session');
 const passportLocalMongoose=require('passport-local-mongoose')
 const jwt=require('jsonwebtoken')
-const {UserModel}=require('./../../config/connection')
+const {UserModel, ProductModel, CartModel}=require('./../../config/connection')
 const passport=require('passport')
 const nodemailer=require('nodemailer') 
 
@@ -126,6 +126,54 @@ router.post('/authpass',(req,res)=>{
         }
     })
 })
+router.get('/getproduct',async(req,res)=>{
+    ProductModel.find().then((data)=>{
+        res.json(data)
+    })
+})
+router.get('/getproduct/:category',async(req,res)=>{
+    let category=req.params.category
+    ProductModel.find({product_category:category}).then((data)=>{
+        res.json(data)
+    })
+})
+router.get('/product/:id',(req,res)=>{
+    let id=req.params.id;
+    ProductModel.findById(id).then((data)=>{
+        res.json(data)
+    })
+})
+router.post('/addtocart',async(req,res)=>{
+    console.log(req.body);
+    CartModel.findOne({user:req.body.user}).then((data)=>{
+        if(data==null){
+            let data=new CartModel({
+                user:req.body.user,
+                products:req.body.cart
+               })
+               data.save((err)=>{
+                if(err) throw err
+                res.json({message:"done"})
+            
+               })
 
+        }
+        else{
+
+            CartModel.updateOne({_id:data._id},{products:req.body.cart}).then(()=>{
+                res.json({message:"done"})
+                
+            })
+        }
+
+    })
+ 
+})
+router.get('/getcart/:user',(req,res)=>{
+    let userR=req.params.user;
+    CartModel.findOne({user:userR}).then((data)=>{
+        res.json(data)
+    })
+})
 
 module.exports=router
