@@ -118,13 +118,14 @@ router.get('/home',(req,res)=>{
     }
 })
 router.post('/authpass',(req,res)=>{
-    jwt.verify(req.body.key,'qwerty',(err,decoded)=>{
-        if(err) throw err
-        else{
-            console.log(decoded);
-            res.json({user:decoded})
-        }
-    })
+    // jwt.verify(req.body.key,'qwerty',(err,decoded)=>{
+    //     if(err) throw err
+    //     else{
+    //         console.log(decoded);
+    //         res.json({user:decoded})
+    //     }
+    // })
+    res.json({user:"auth"})
 })
 router.get('/getproduct',async(req,res)=>{
     ProductModel.find().then((data)=>{
