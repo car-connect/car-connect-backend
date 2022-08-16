@@ -32,11 +32,9 @@ router.post('/signup',(req,res)=>{
    
     UserModel.register({username:req.body.username,name:req.body.name},req.body.password,(err,user)=>{
         if(err) {
-            console.log(err);
             res.json(err)
         }
         else{
-            console.log(user);
             passport.authenticate("local")(req,res,()=> {
                 let token=Math.floor(1000 + Math.random() * 9000);
                 let output=
@@ -95,7 +93,6 @@ router.post('/login',(req,res)=>{
    
     req.login(user,(err)=>{
         if(err){
-            console.log(err);
             res.json(err)
         }
         else{
@@ -110,7 +107,6 @@ router.post('/login',(req,res)=>{
  
 })
 router.get('/home',(req,res)=>{
-    console.log("user",req.user);
     if(req.isAuthenticated()){
         res.json('authenticated')
     }else{
@@ -145,7 +141,6 @@ router.get('/product/:id',(req,res)=>{
     })
 })
 router.post('/addtocart',async(req,res)=>{
-    console.log(req.body);
     CartModel.findOne({user:req.body.user}).then((data)=>{
         if(data==null){
             let data=new CartModel({
@@ -170,10 +165,72 @@ router.post('/addtocart',async(req,res)=>{
     })
  
 })
+router.post('/deletecartproduct/:id',(req,res)=>{
+    let id=req.params.id;
+    CartModel.updateMany({user:id},{products:req.body}).then((data)=>{
+        console.log(data);
+        res.json({message:'done'})
+
+    })
+ 
+
+})
+router.post('/deletewishproduct/:id',(req,res)=>{
+    let id=req.params.id;
+    CartModel.updateMany({user:id},{wishlist:req.body}).then((data)=>{
+        res.json({message:'done'})
+    })
+ 
+
+})
+router.delete('/deletecart/:user',(req,res)=>{
+    let userR=req.params.user;
+    CartModel.updateOne({user:userR},{products:[]}).then((data)=>{
+        res.json({message:'done'})
+    })
+
+})
+
+router.get('/details/:user',(req,res)=>{
+    let user=req.params.user;
+    UserModel.findOne({username:user}).then((data)=>{
+        res.json(data)
+    })
+})
 router.get('/getcart/:user',(req,res)=>{
     let userR=req.params.user;
     CartModel.findOne({user:userR}).then((data)=>{
-        res.json(data)
+        if(data==null){
+            res.json({products:[]})
+        }
+        else{
+
+            res.json(data)
+        }
+    })
+})
+router.post('/addtowish',(req,res)=>{
+    CartModel.updateOne({user:req.body.user},{wishlist:req.body.wish}).then((data)=>{
+        if(data.matchedCount==0){
+            let data=new CartModel({
+                user:req.body.user,
+                wishlist:req.body.wish
+               })
+               data.save((err)=>{
+                if(err) throw err
+                res.json({message:"done"})
+            
+               })
+        }
+        // res.json({message:'done'})
+    })
+})
+
+
+router.get('/getwishproducts/:user',(req,res)=>{
+    let userR=req.params.user;
+    CartModel.findOne({user:userR}).then((data)=>{
+        res.json(data.wishlist)
     })
 })
 
