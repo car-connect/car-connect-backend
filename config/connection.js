@@ -83,6 +83,12 @@ const Cartschema=new mongoose.Schema({
 
 })
 
+const PlaceOrderSchema=new mongoose.Schema({
+  user:String,
+  products:Array,
+  time:String
+})
+
 //models
 
 const UserModel=mongoose.model('Users',UserSchema)
@@ -109,4 +115,6 @@ const AdminModel=mongoose.model('Admins',AdminSchema)
 const ProductModel=mongoose.model('Products',ProductSchema)
 
 const CartModel=mongoose.model('Cart',Cartschema)
-module.exports={UserModel,AdminModel,ProductModel,CartModel}
+
+const PlaceOrderModel=mongoose.model('placeorder',PlaceOrderSchema)
+module.exports={UserModel,AdminModel,ProductModel,CartModel,PlaceOrderModel}

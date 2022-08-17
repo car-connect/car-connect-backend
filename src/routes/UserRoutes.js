@@ -5,7 +5,7 @@ const bcrypt=require('bcrypt')
 const session=require('express-session');
 const passportLocalMongoose=require('passport-local-mongoose')
 const jwt=require('jsonwebtoken')
-const {UserModel, ProductModel, CartModel}=require('./../../config/connection')
+const {UserModel, ProductModel, CartModel, PlaceOrderModel}=require('./../../config/connection')
 const passport=require('passport')
 const nodemailer=require('nodemailer') 
 
@@ -231,6 +231,28 @@ router.get('/getwishproducts/:user',(req,res)=>{
     let userR=req.params.user;
     CartModel.findOne({user:userR}).then((data)=>{
         res.json(data.wishlist)
+    })
+})
+router.post('/placeorder/:user',(req,res)=>{
+    let userR=req.params.user;
+    let time=new Date(req.body.time)
+    let data=new PlaceOrderModel({
+        user:userR,
+        products:req.body.cart,
+        time:time
+
+    })
+    data.save((err)=>{
+        if(err) throw err
+        else{
+            res.json({message:'done'})
+        }
+    })
+})
+router.get('/getplaceorder/:user',(req,res)=>{
+    let userR=req.params.user;
+    PlaceOrderModel.findOne({user:userR}).then((data)=>{
+        res.json(data)
     })
 })
 
