@@ -46,6 +46,8 @@ router.post('/addproduct',async(req,res)=>{
         product_category:req.body.product_category,
         available_quantity:req.body.available_quantity,
         percentage_discount:req.body.percentage_discount,
+        image:req.body.imageUrl,
+        AuxUrl:req.body.AuxUrl,
         online_date:req.body.online_date,
     })
 
@@ -57,6 +59,16 @@ router.post('/addproduct',async(req,res)=>{
 
     })
     
+})
+
+router.post('/editproduct/:product',(req,res)=>{
+    let product=req.params.product;
+    console.log(product);
+    console.log(req.body);
+    ProductModel.updateOne({product_name:product},{$set:req.body}).then((data)=>{
+        console.log("edit",data);
+        res.json({message:'done'})
+    })
 })
 
 

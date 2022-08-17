@@ -71,6 +71,8 @@ const ProductSchema=new mongoose.Schema({
   available_quantity:String,
   percentage_discount:String,
   online_date:String,
+  image:Array,
+  AuxUrl:Array
 
 })
 const Cartschema=new mongoose.Schema({
