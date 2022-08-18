@@ -63,9 +63,9 @@ router.post('/addproduct',async(req,res)=>{
 
 router.post('/editproduct/:product',(req,res)=>{
     let product=req.params.product;
-    console.log(product);
+    console.log("yeh",product);
     console.log(req.body);
-    ProductModel.updateOne({product_name:product},{$set:req.body}).then((data)=>{
+    ProductModel.findById(product,{$set:req.body}).then((data)=>{
         console.log("edit",data);
         res.json({message:'done'})
     })
@@ -75,6 +75,12 @@ router.post('/editproduct/:product',(req,res)=>{
 router.get('/deleteproduct/:id',async(req,res)=>{
     let id=req.params.id
     ProductModel.findByIdAndDelete(id).then((data)=>{
+        res.json(data)
+    })
+})
+router.get('/deleteuser/:id',async(req,res)=>{
+    let id=req.params.id
+    UserModel.findByIdAndDelete(id).then((data)=>{
         res.json(data)
     })
 })
