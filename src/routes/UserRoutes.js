@@ -28,11 +28,17 @@ let verifyToken=(req,res,next)=>{
     req.userId=payload.subject
     next()
 }
+
+
+
+
+
+
 router.post('/signup',(req,res)=>{
    
     UserModel.register({username:req.body.username,name:req.body.name},req.body.password,(err,user)=>{
         if(err) {
-            res.json(err)
+            res.json({message:"Unknown Error"})
         }
         else{
             passport.authenticate("local")(req,res,()=> {
@@ -65,7 +71,7 @@ router.post('/signup',(req,res)=>{
             
               // send mail with defined transport object
               let info =  transporter.sendMail({
-                from: '"CAR-CONNECT" <anugrah.futura@gmail.com>', // sender address
+                from: '"CAR-CONNECT" <carconnect00@gmail.com>', // sender address
                 to: req.body.username, // list of receivers
                 subject: "Email-Authentication", // Subject line
                 text: "Content-main", // plain text body
@@ -85,6 +91,7 @@ router.post('/signup',(req,res)=>{
 
     })
 })
+
 router.post('/login',(req,res)=>{
     const user=new UserModel({
         username:req.body.username,
@@ -97,7 +104,7 @@ router.post('/login',(req,res)=>{
         }
         else{
             passport.authenticate("local")(req,res,()=>{
-                console.log("done",user);
+                console.log("user authenticated",req.user);
               let token= jwt.sign(user.username+user.password,process.env.JWT_SECRET)
                 res.json({user:req.user,message:'authenticated',token:token})
                 // res.redirect('/user/home')
@@ -106,6 +113,7 @@ router.post('/login',(req,res)=>{
     })
  
 })
+
 router.get('/home',(req,res)=>{
     if(req.isAuthenticated()){
         res.json('authenticated')
@@ -113,6 +121,7 @@ router.get('/home',(req,res)=>{
         res.json('not auth')
     }
 })
+
 router.post('/authpass',(req,res)=>{
     // jwt.verify(req.body.key,'qwerty',(err,decoded)=>{
     //     if(err) throw err
@@ -123,70 +132,76 @@ router.post('/authpass',(req,res)=>{
     // })
     res.json({user:"auth"})
 })
+
 router.get('/getproduct',async(req,res)=>{
     ProductModel.find().then((data)=>{
         res.json(data)
     })
 })
+
 router.get('/getproduct/:category',async(req,res)=>{
     let category=req.params.category
     ProductModel.find({product_category:category}).then((data)=>{
         res.json(data)
     })
 })
+
 router.get('/product/:id',(req,res)=>{
     let id=req.params.id;
     ProductModel.findById(id).then((data)=>{
         res.json(data)
     })
 })
+
 router.post('/addtocart',async(req,res)=>{
-    CartModel.findOne({user:req.body.user}).then((data)=>{
-        if(data==null){
+    CartModel.updateOne({user:req.body.user},{products:req.body.cart}).then((data)=>{
+        if(data.matchedCount==0){
             let data=new CartModel({
                 user:req.body.user,
                 products:req.body.cart
                })
                data.save((err)=>{
                 if(err) throw err
-                res.json({message:"done"})
+                res.json({message:"new Cart User"})
             
                })
 
         }
         else{
+            console.log("cart Updated");
+            res.json({message:"Cart Updated"})
 
-            CartModel.updateOne({_id:data._id},{products:req.body.cart}).then(()=>{
-                res.json({message:"done"})
-                
-            })
         }
+       
 
     })
  
 })
+
 router.post('/deletecartproduct/:id',(req,res)=>{
     let id=req.params.id;
     CartModel.updateMany({user:id},{products:req.body}).then((data)=>{
-        console.log(data);
-        res.json({message:'done'})
+        console.log("deleteProduct",data);
+        res.json({message:"Product Deleted"})
 
     })
  
 
 })
+
 router.post('/deletewishproduct/:id',(req,res)=>{
     let id=req.params.id;
     CartModel.updateMany({user:id},{wishlist:req.body}).then((data)=>{
-        res.json({message:'done'})
+        res.json({message:"Wish Deleted"})
     })
  
 
 })
+
 router.delete('/deletecart/:user',(req,res)=>{
     let userR=req.params.user;
     CartModel.updateOne({user:userR},{products:[]}).then((data)=>{
-        res.json({message:'done'})
+        res.json({message:"CartItem Deleted"})
     })
 
 })
@@ -197,6 +212,7 @@ router.get('/details/:user',(req,res)=>{
         res.json(data)
     })
 })
+
 router.get('/getcart/:user',(req,res)=>{
     let userR=req.params.user;
     CartModel.findOne({user:userR}).then((data)=>{
@@ -204,11 +220,11 @@ router.get('/getcart/:user',(req,res)=>{
             res.json({products:[]})
         }
         else{
-
             res.json(data)
         }
     })
 })
+
 router.post('/addtowish',(req,res)=>{
     CartModel.updateOne({user:req.body.user},{wishlist:req.body.wish}).then((data)=>{
         if(data.matchedCount==0){
@@ -218,11 +234,12 @@ router.post('/addtowish',(req,res)=>{
                })
                data.save((err)=>{
                 if(err) throw err
-                res.json({message:"done"})
+                res.json({message:"new Wish User"})
             
                })
+        }else{
+            res.json({message:"Wish Updated"})
         }
-        // res.json({message:'done'})
     })
 })
 
@@ -230,9 +247,15 @@ router.post('/addtowish',(req,res)=>{
 router.get('/getwishproducts/:user',(req,res)=>{
     let userR=req.params.user;
     CartModel.findOne({user:userR}).then((data)=>{
-        res.json(data.wishlist)
+        if(data==null){
+            res.json([])
+        }else{
+            res.json(data.wishlist)
+
+        }
     })
 })
+
 router.post('/placeorder/:user',(req,res)=>{
     let userR=req.params.user;
     let time=new Date(req.body.time)
@@ -245,14 +268,18 @@ router.post('/placeorder/:user',(req,res)=>{
     data.save((err)=>{
         if(err) throw err
         else{
-            res.json({message:'done'})
+            res.json({message:"Order Placed"})
         }
     })
 })
 router.get('/getplaceorder/:user',(req,res)=>{
     let userR=req.params.user;
     PlaceOrderModel.findOne({user:userR}).then((data)=>{
-        res.json(data)
+        if(data==null){
+            res.json([])
+        }else{
+            res.json(data)
+        }
     })
 })
 

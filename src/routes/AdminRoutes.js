@@ -16,9 +16,9 @@ router.post('/login',async(req,res)=>{
             bcrypt.compare(req.body.password,data.password,(err,admin)=>{
                 if(err) throw err
                 else{
-                    if(admin==true){
+                    if(admin){
                         let payload={subject:req.body.email+req.body.password}
-                      let token=  jwt.sign(payload,jwt_secret)
+                        let token=  jwt.sign(payload,jwt_secret)
                         res.json({auth:admin,token:token})
                     }
                     else{
@@ -29,7 +29,7 @@ router.post('/login',async(req,res)=>{
             })
         }
         else{
-            res.json('no')
+            res.json({message:false})
         }
        
     })
@@ -54,20 +54,20 @@ router.post('/addproduct',async(req,res)=>{
     data.save((err)=>{
         if(err) throw err
         else{
-            res.json("added")
+            res.json({message:"New Product Added"})
         }
 
     })
     
 })
 
-router.post('/editproduct/:product',(req,res)=>{
+router.post('/editproduct/:product',async(req,res)=>{
     let product=req.params.product;
-    console.log("yeh",product);
-    console.log(req.body);
-    ProductModel.findById(product,{$set:req.body}).then((data)=>{
-        console.log("edit",data);
-        res.json({message:'done'})
+    console.log("ProductEditing",product);
+    console.log("ProductEditing",req.body);
+    ProductModel.findByIdAndUpdate(product,{$set:req.body}).then((data)=>{
+        console.log("editProduct",data);
+        res.json({message:"Product Edited"})
     })
 })
 
@@ -75,13 +75,15 @@ router.post('/editproduct/:product',(req,res)=>{
 router.get('/deleteproduct/:id',async(req,res)=>{
     let id=req.params.id
     ProductModel.findByIdAndDelete(id).then((data)=>{
-        res.json(data)
+        console.log("deleteProduct",data);
+        res.json({message:"Product Deleted"})
     })
 })
 router.get('/deleteuser/:id',async(req,res)=>{
     let id=req.params.id
     UserModel.findByIdAndDelete(id).then((data)=>{
-        res.json(data)
+        console.log("deleteUser",data);
+        res.json({message:"User Deleted"})
     })
 })
 router.get('/getuser',async(req,res)=>{
