@@ -4,10 +4,10 @@
   "description": "e-commerce-app",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "serve": "nodemon app.js",
+    "start": "node app.js"
   },
-  "author": "Deepak,Divya,Cristjoseph,Anugrah",
+  "author": "Deepak,Divya,Anugrah",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.1",
